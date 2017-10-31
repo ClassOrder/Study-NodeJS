@@ -3,6 +3,9 @@
 * Reference: Professional Node.js:Building JavaScript-Based Scalable Software.
 **/
 
+/**
+* Just exports example.
+*/
 function Circle(x, y, r){
     
     function r_squared(){
