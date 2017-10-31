@@ -1,7 +1,4 @@
-/**
-* Study inform.
 * Reference: Professional Node.js:Building JavaScript-Based Scalable Software.
-**/
 
 # [Node.js]BaseStudy
 
