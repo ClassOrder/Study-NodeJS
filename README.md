@@ -1,3 +1,8 @@
+/**
+* Study inform.
+* Reference: Professional Node.js:Building JavaScript-Based Scalable Software.
+**/
+
 # [Node.js]BaseStudy
 
 ### 표준 콜백 패턴
@@ -33,7 +38,7 @@ request.end();
 - Print: 결과값 출력
 - Loop: Read, Eval, Print를 유저가 종료(<kbd>Ctrl</kbd> + <kbd>C</kbd>)할 때까지 반복
 
-## 지연된 반응을 필요로 하는 종류의 사용자 인터페이스 상호작용을 개발하는데 도움이 되는 함수들
+## <지연된 반응을 요구하는 사용자 인터페이스 상호작용>을 개발하는데 도움이 되는 함수들
 ### setTimeout
 - 일정 시간 동안 함수 실행을 미룰 수 있음
 ~~~javascript
@@ -45,7 +50,21 @@ var timeout = setTimeout(function(){
 
 ### setInterval
 - 특정 시간 주기로 함수를 반복 실행할 수 있게 해줌
-
+~~~javascript
+var period = 1000;
+setInterval(function(){
+    console.log("tick");
+}, period);
+// 예약을 취소하고 싶을 때는 clearInterval(); 호출
+~~~
+- 반환되는 스케줄링 핸들러를 인자로 전달하여 예약 취소
+~~~javascript
+var interval = setInterval(function(){
+    console.log("tick");
+}, 1000);
+// ...
+clearInterval(interval);
+~~~
 
 ### clearTimeout
 - 함수 호출 예약 취소
@@ -69,4 +88,12 @@ setTimeout(function B(){
 /**
 * A()함수는 실행되지 않는다.
 */
+~~~
+
+### process.nextTick
+- 다음 이벤트 루프 반복까지 함수 실행 연기
+~~~javascript
+process.nextTick(function(){
+    my_expensive_computation_function();
+})
 ~~~
