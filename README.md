@@ -31,4 +31,4 @@ request.end();
 - Read: 유저의 값을 입력받아 JavaScript 데이터 구조로 메모리에 저장
 - Eval: 데이터 처리(Evaluate)
 - Print: 결과값 출력
-- Loop: Read, Eval, Print를 유저가 종료(<kbd>Ctrl + C</kbd>)할 때까지 반복
+- Loop: Read, Eval, Print를 유저가 종료(<kbd>Ctrl</kbd> + <kbd>C</kbd>)할 때까지 반복
