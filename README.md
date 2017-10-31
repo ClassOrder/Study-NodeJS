@@ -1,4 +1,4 @@
-* Reference: Professional Node.js:Building JavaScript-Based Scalable Software.
+##### Reference: Professional Node.js:Building JavaScript-Based Scalable Software.
 
 # [Node.js]BaseStudy
 
