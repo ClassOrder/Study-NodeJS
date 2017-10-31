@@ -27,8 +27,46 @@ var request = http.request(options, function(response){
 request.end();
 ~~~
 
-##### REPL
+### REPL
 - Read: 유저의 값을 입력받아 JavaScript 데이터 구조로 메모리에 저장
 - Eval: 데이터 처리(Evaluate)
 - Print: 결과값 출력
 - Loop: Read, Eval, Print를 유저가 종료(<kbd>Ctrl</kbd> + <kbd>C</kbd>)할 때까지 반복
+
+## 지연된 반응을 필요로 하는 종류의 사용자 인터페이스 상호작용을 개발하는데 도움이 되는 함수들
+### setTimeout
+- 일정 시간 동안 함수 실행을 미룰 수 있음
+~~~javascript
+var timeout_ms = 2000;
+var timeout = setTimeout(function(){
+    console.log("Timeout");
+}, timeout_ms);
+~~~
+
+### setInterval
+- 특정 시간 주기로 함수를 반복 실행할 수 있게 해줌
+
+
+### clearTimeout
+- 함수 호출 예약 취소
+~~~javascript
+var timeoutTime = 1000;
+var timeout = setTimeout(function(){
+    console.log("Timeout!");
+}, timeoutTime);
+clearTimeout(timeout);
+~~~
+- 타임아웃이 일어나지 않으며, 함수 실행 또한 되지 않음
+- 특정 시점에 예약된 실행을 취소 가능
+~~~javascript
+var timeout = setTimeout(function A(){
+    console.log("Timeout!");
+}, 2000);
+
+setTimeout(function B(){
+    clearTimeout(timeout);
+}, 1000);
+/**
+* A()함수는 실행되지 않는다.
+*/
+~~~
