@@ -54,7 +54,7 @@ fs.open("/path/to/file", "r", function(error, fd){
 * @param flag : ["r", "r+", "w", "w+", "a", "a+"]
 * @param callback function()
 */
-fs.open("./my_file.txt", "r", function opened(error, fd){
+fs.open("./myfile.txt", "r", function opened(error, fd){
     if(error){ throw error; }
     var readBuffer = new Buffer(1024),
         bufferOffset = 0,
@@ -78,7 +78,7 @@ fs.open("./my_file.txt", "r", function opened(error, fd){
 * @param flag : ["r", "r+", "w", "w+", "a", "a+"]
 * @param callback function()
 */
-fs.open('./my_file.txt','a', function opened(error, fd){
+fs.open('./myfile.txt','a', function opened(error, fd){
     if (error) throw error;
     var writeBuffer = new Buffer('\nwriting this string'),
         bufferPosition = 0,
@@ -112,7 +112,7 @@ fs.open('./my_file.txt','a', function opened(error, fd){
 */
 function openAndWriteToSystemLog(writeBuffer, callback){
     
-    fs.open('./my_file', 'a', function opened(error, fd){
+    fs.open('./myfile', 'a', function opened(error, fd){
         if (error) return callback(error);
         
         function notifyError(error){
@@ -140,19 +140,10 @@ openAndWriteToSystemLog(new Buffer('Writing this String\n'),
         console.log("When doing read and write, cause error: ", error.message);
         return;
     }
-    console.log('Completed withour error.');
+    console.log('Completed without error.');
 });
 
 /**
 * Learned Low Level file OPEN, READ, WRITE, CLOSE.
 * Node provide High Level Structure like :WriteStream or :ReadStream.
 */
-
-
-
-
-
-
-
-
-
