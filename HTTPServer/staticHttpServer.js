@@ -1,7 +1,8 @@
 var path = require('path'),
-    fs = require('fs');
+    fs = require('fs'),
+    http = require('http');
 
-require('http').createServer(function(req, res){
+http.createServer(function(req, res){
     var file = path.normalize('.' + req.url);
     console.log('Finding files in SERVER: ', file);
     
@@ -11,7 +12,28 @@ require('http').createServer(function(req, res){
         res.end('Internal Server Error');
     }
     
-    path.exists(file, function(exists){
-        
-    })
-})
+    fs.exists(file, function(exists){
+        if(exists){
+            fs.stat(file, function(err, stat){
+                var rs;
+                
+                if(err){
+                    return reportError(err);
+                }
+                
+                if(stat.isDirectory()){
+                    res.writeHead(403); res.end('Forbidden');
+                } else {
+                    rs = fs.createReadStream(file);
+                    
+                    rs.on('error', reportError);
+                    res.writeHead(200, { 'Content-Type': "text/plain" });
+                    rs.pipe(res);
+                }
+            });
+        } else {
+            res.writeHead(404);
+            res.end('Not found');
+        }
+    });
+}).listen(4000);
