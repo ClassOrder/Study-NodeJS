@@ -32,6 +32,10 @@ router.route('/process/login').post(function(req, res){
     res.end();
 });
 
+app.all('*', function(req, res){
+    res.status(404).send('<h1>앗! 아직 공사 중인 부분에 접근하셨어요! 위험한 지역이지 돌아갑시다! :D 챠오스! </h1>');
+});
+
 app.set('port', process.env.PORT || 3000);
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
@@ -39,7 +43,7 @@ app.use(static(path.join(__dirname, 'public')));
 app.use('/', router);
 
 app.use(function(req, res, next){
-    console.log('첫번째 미들웨어?에서 처리함');
+    console.log('첫번째 미들웨어에서 처리함');
     var paramId = req.body.id || req.query.id;
     var paramPassword = req.body.password || req.query.password;
     
