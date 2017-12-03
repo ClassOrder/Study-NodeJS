@@ -54,6 +54,13 @@ var storage = multer.diskStorage({
     }
 });
 
+var upload = multer({
+    storage: storage,
+    limits: {
+        files: 10,
+        filesize: 1024 * 1024 * 1024
+    }
+});
 
 /*****************************/
 /* Express Route Normal Part */
@@ -164,18 +171,65 @@ router.route('/loginzero.html').get(function (req, res){
     res.end();
 });
 
+
+router.route('/process/photo').post(upload.array('photo',1), function(req, res){
+    console.log('/process/photo 호출됨');
+    try{
+        var files = req.files;
+
+        console.dir('#===== 업로드된 첫번째 파일 정보 =====#')
+        console.dir(req.files[0]);
+        console.dir('#=====#')
+
+        var originalname = '',
+            filename = '',
+            mimetype = '',
+            size = 0;
+        
+        if(Array.isArray(files)) {
+            console.log('배열에 들어있는 파일의 갯수: %d', files.length);
+
+            for(var index = 0; index < files.length; index++) {
+                originalname = files[index].originalname;
+                filename = files[index].filename;
+                mimetype = files[index].mimetype;
+                size = files[index].size;
+            }
+        } else {
+            console.log('파일 갯수: 1');
+
+            originalname = file[index].originalname;
+            filename = files[index].name;
+            mimetype = files[index].mimetype;
+            size = files[index].size;
+        }
+
+        console.log('현재 파일 정보: ' + originalname + ', ' + filename + ', ' + mimetype + ', ' + size);
+
+        res.writeHead(200,{'content-Type':'text/html;charset=utf8'});
+        res.write('<h3>파일 업로드 성공</h3>');
+        res.write('<hr/>');
+        res.write('<p>원본 파일 이름: ' + originalname + ' => 저장 파일명 ' + filename + '</p>');
+        res.write('<p>MIME Type: ' + mimetype + '</p>');
+        res.write('<p>파일 크기: ' + size + '</p>');
+        res.end();
+    } catch(err) {
+        console.dir(err.stack);    
+    }
+});
+
 app.use('/',router);
 
-app.use(function(req, res, next){
-    console.log('첫번째 미들웨어에서 요청처리');
-    var paramId = req.body.id || req.query.id;
-    var paramPassword = req.body.password || req.query.password;
-    res.writeHead(200, {'Content-Type':'text/html;charset=utf8'});
-    res.write('<h1>Express Middleware First</h1>');
-    res.write('<div><p>Param id: ' + paramId + '</p></div>');
-    res.write('<div><p>Param password: ' + paramPassword + '</p></div>');
-    res.end();
-});
+//app.use(function(req, res, next){
+//    console.log('첫번째 미들웨어에서 요청처리');
+//    var paramId = req.body.id || req.query.id;
+//    var paramPassword = req.body.password || req.query.password;
+//    res.writeHead(200, {'Content-Type':'text/html;charset=utf8'});
+//    res.write('<h1>Express Middleware First</h1>');
+//    res.write('<div><p>Param id: ' + paramId + '</p></div>');
+//    res.write('<div><p>Param password: ' + paramPassword + '</p></div>');
+//    res.end();
+//});
 
 
 /****************************/
@@ -190,8 +244,5 @@ var errorHandler = expressErrorHandler({
 
 app.use(expressErrorHandler.httpError(404));
 app.use(errorHandler);
-
-
-
 
 http.createServer(app).listen(3000);
