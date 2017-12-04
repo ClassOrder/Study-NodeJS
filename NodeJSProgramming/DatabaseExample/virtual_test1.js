@@ -28,3 +28,69 @@ function connectDB() {
     });
     database.on('disconnected', connectDB);
 }
+
+
+/* user 스키마 및 모델 객체 생성 */
+function createUserSchema() {
+    
+    /* 스키마 정의 */
+    /* password를 hashed_password로 변경, default 속성 모두 추가, salt 속성 추가 */
+    UserSchema = mongoose.Schema({
+        id: {type: String, required: true, unique: true},
+        name: {type: String, index: 'hashed', 'default':''},
+        age: {type: Number, 'default': -1},
+        created_at: {type:Date, index:{unique:false}, 'default':Date.now},
+        updated_at: {type:Date, index:{unique:false}, 'default':Date.now}
+    });
+    
+    /* info를 virtual 메소드로 정의 */
+    UserSchema
+        .virtual('info')
+        .set(function(info){
+            var splitted = info.split(' ');
+            this.id = splitted[0];
+            this.name = splitted[1];
+            console.log('virtual info 설정: %s, %s', this.id, this.name);
+    })
+    .get(function(){return this.id + ' ' + this.name});
+    
+    console.log('UserSchema 정의');
+    
+    /* UserModel 정의 */
+    UserModel = mongoose.model('user4', UserSchema);
+    console.log('UserModel 정의');
+}
+
+function doTest(){
+    /* UserModel 인스턴스 생성 */
+    /* id, name 속성은 할당하지 않고 info 속성만 할당함 */
+    var user = new UserModel({'info': 'test01 Emrys'});
+    
+    /* save()로 저장 */
+    user.save(function(err) {
+        if(err) throw err;
+        console.log('사용자 데이터 추가');
+        findAll();
+    });
+    console.log('info 속성에 값 할당');
+    console.log('id: %s, name: %s', user.id, user.name);
+}
+
+function findAll(){
+    UserModel.find({}, function(err, results) {
+        if(err) throw err;
+        if(results) {
+            console.log('조회된 user 문서 객체 #0 -> id: %s, name: %s',
+                        results[0]._doc.id, results[0]._doc.name);
+        }
+    });
+}
+
+/* connectDB 호출 */
+connectDB();
+    
+    
+    
+    
+    
+    
