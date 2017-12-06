@@ -368,8 +368,6 @@ var addUser = function(database, id, password, name, callback) {
     });
 };
 
-
-
 //===== 404 오류 페이지 처리 =====//
 var errorHandler = expressErrorHandler({
     static: {
