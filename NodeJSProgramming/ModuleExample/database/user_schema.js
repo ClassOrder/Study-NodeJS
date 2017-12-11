@@ -1,3 +1,10 @@
+/**
+ * 데이터베이스 스키마 정의
+ * 
+ * @date 2017-12-11
+ * @author Emrys
+ */
+
 var crypto = require('crypto');
 
 var Schema = { };
