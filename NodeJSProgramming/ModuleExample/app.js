@@ -7,7 +7,8 @@ var express = require('express'),
 var bodyParser = require('body-parser'),
     cookieParser = require('cookie-parser'),
     static = require('serve-static'),
-    errorHandler = require('errorhandler');
+    errorHandler = require('errorhandler'),
+    user = require('./routes/user')
 
 /* 오류 핸들러 모듈 */
 var expressErrorHandler = require('express-error-handler');
@@ -94,6 +95,8 @@ function createUserSchema(){
     /* UserModel 모델 정의 */
     UserModel = mongoose.model("users3", UserSchema);
     console.log('User3 정의함');
+
+    user.init(database, UserSchema, UserModel);
 }
 
 /* 라우터 객체 참조 */
