@@ -1,13 +1,3 @@
-/**
- * ejs 뷰 템플릿 적용하기
- * 
- * 뷰 템플릿을 만들고 응답 웹문서를 템플릿으로부터 생성
- *
- * @date 2016-11-10
- * @author Mike
- */
- 
-
 // Express 기본 모듈 불러오기
 var express = require('express')
 , http = require('http')
@@ -35,11 +25,106 @@ var database = require('./database/database');
 // 모듈로 분리한 라우팅 파일 불러오기
 var route_loader = require('./routes/route_loader');
 
+var router = express.Router();
+route_loader.init(app, router);
 
-
+/** Passport 사용 */
+var passport = require('passport');
+var flash = require('connect-flash');
 
 // 익스프레스 객체 생성
 var app = express();
+
+
+var LocalStrategy = require('passport-local').Strategy;
+
+router.route('/').get(function(req, res){
+  console.log('/ 패스 요청됨.');
+  res.render('index.ejs');
+});
+
+app.get('/login', function(req, res) {
+  console.log('/login 패스 요청됨.');
+  res.render('login.ejs', {message: req.flash('loginMessage')});
+})
+
+app.post('/login', passport.authenticate('local-login', {
+  successRedirect: '/profile',
+  failureRedirect: '/login',
+  failureFlash: true
+}));
+
+passport.use('local-login', new LocalStrategy({
+  usernameField: 'email',
+  passwordField: 'password',
+  passReqToCallback: true
+}, function(req, email, password, done){
+  console.log('passport의 local-login 호출: ' + email + ', ' + password);
+
+  var database = app.get('database');
+  database.UserModel.findOne({'email':email}, function(err, user){
+    if(err) return done(err);
+
+    if(!user){
+      console.log('계정이 일치하지 않음.');
+      return done(null, false, req.flash('loginMessage', '등록된 계정이 없습니다.'));
+    }
+
+    var authenticated = user.authenticate(password, user._doc.salt, user._doc.hashed_password);
+    if(!authenticated) {
+      console.log('비밀번호 일치하지 않음');
+      return done(null, false, req.flash('loginMessage', '비밀번호가 일치하지 않습니다.'));
+    }
+
+    console.log('계정과 비밀번호가 일치함.');
+    return done(null, user);
+  });
+}));
+
+passport.use('local-signup', new LocalStrategy({
+  usernameField: 'email',
+  passwordField: 'password',
+  passReqToCallback: true
+}, function(req, email, password, done) {
+  var paramName = req.body.name || req.query.name;
+  console.log('passport의 local-signup 호출: ' + email + ', ' + passport + ', ' + paramName);
+
+  process.nextTick(function() {
+    var database = app.get('database');
+    database.UserModel.findOne({'email': email}, function(err, user) {
+      if(err) {
+        return done(err);
+      }
+
+      if(user) {
+        console.log('기존에 계정이 있음.');
+        return done(null, false, req.flash('signupMessage:', '계정이 이미 있습니다.'));
+      } else {
+        var user = new database.UserModel({
+          'email': email,
+          'password': password,
+          'name': paramName
+        });
+        user.save(function(err) {
+          if(err) throw err;
+          console.log('사용자 데이터 추가');
+          return done(null, user);
+        });
+      }
+    });
+  });
+}));
+
+passport.serializeUser(function(user, done) {
+  console.log('serializeUser() 호출');
+  console.dir(user);
+
+  done(null, user);
+});
+
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
 
 
 //===== 뷰 엔진 설정 =====//
