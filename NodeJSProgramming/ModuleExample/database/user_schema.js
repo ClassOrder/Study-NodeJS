@@ -13,13 +13,51 @@ Schema.createSchema = function(mongoose) {
     	// 스키마 정의
 	// password를 hashed_password로 변경, 각 칼럼에 default 속성 모두 추가, salt 속성 추가
 	UserSchema = mongoose.Schema({
-	    id: {type: String, required: true, unique: true, 'default':''},
-	    hashed_password: {type: String, required: true, 'default':''},
-	    salt: {type:String, required:true},
-	    name: {type: String, index: 'hashed', 'default':''},
-	    age: {type: Number, 'default': -1},
-	    created_at: {type: Date, index: {unique: false}, 'default': Date.now},
-	    updated_at: {type: Date, index: {unique: false}, 'default': Date.now}
+
+		id: {
+			type: String,
+			required: true,
+			unique: true,
+			'default':''
+		},
+		
+		hashed_password: {
+			type: String,
+			required: true,
+			'default':''
+		},
+
+	    salt: {
+			type:String,
+			required:true
+		},
+
+	    name: {
+			type: String,
+			index: 'hashed',
+			'default':''
+		},
+
+	    age: {
+			type: Number,
+			'default': -1
+		},
+		
+		created_at: {
+			type: Date,
+			index: {
+				unique: false
+			},
+			'default': Date.now
+		},
+
+	    updated_at: {
+			type: Date,
+			index: {
+				unique: false
+			},
+			'default': Date.now
+		}
 	});
 	
 	// password를 virtual 메소드로 정의 : MongoDB에 저장되지 않는 가상 속성임. 

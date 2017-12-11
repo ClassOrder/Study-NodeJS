@@ -22,7 +22,7 @@ function connect(app, config) {
     console.log('connect() 호출');
     /* 데이터베이스 연결: config 설정 사용 */
     mongoose.Promise = global.Promise; //mongoose의 Promise 객체는 global의 Promise 객체 사용
-    mongoose.connect(congif.db_url);
+    mongoose.connect(config.db_url);
     database.db = mongoose.connection;
 
     database.db.on('error', console.error.bind(console, 'mongoose connection error.'));
@@ -59,3 +59,6 @@ function  createSchema(app, config) {
     app.set('database', database);
     console.log('database 객체가 app 객체의 속성으로 추가되었습니다.');
 }
+
+/** database 객체를 module.exports에 할당 */
+module.exports = database;
