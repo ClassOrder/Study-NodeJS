@@ -44,8 +44,8 @@ var app = express();
 
 //===== 뷰 엔진 설정 =====//
 app.set('views', __dirname + '/views');
-app.set('view engine', 'ejs');
-console.log('뷰 엔진이 ejs로 설정되었습니다.');
+app.set('view engine', 'pug');
+console.log('뷰 엔진이 pug로 설정되었습니다.');
 
 
 //===== 서버 변수 설정 및 static으로 public 폴더 설정  =====//
