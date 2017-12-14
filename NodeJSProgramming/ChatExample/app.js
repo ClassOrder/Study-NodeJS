@@ -26,6 +26,9 @@ let route_loader = require('./routes/route_loader');
 
 let router = express.Router();
 
+let socketio = require('socket.io');
+
+let cors = require('cors');
 
 /** Passport 사용 */
 let passport = require('passport');
@@ -34,6 +37,8 @@ let flash = require('connect-flash');
 // 익스프레스 객체 생성
 let app = express();
 route_loader.init(app, router);
+
+app.use(cors());
 
 let LocalStrategy = require('passport-local').Strategy;
 
@@ -205,3 +210,6 @@ let server = http.createServer(app).listen(app.get('port'), function(){
   database.init(app, config);
  
 });
+
+var io = socketio.listen(server);
+console.log('socket.io 요청을 받아들일 준비가 되었습니다.');
