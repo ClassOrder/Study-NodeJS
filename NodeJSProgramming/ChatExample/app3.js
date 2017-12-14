@@ -215,7 +215,14 @@ let io = socketio.listen(server);
 console.log('socket.io 요청을 받아들일 준비가 되었습니다.');
 
 let login_ids = {};
-
+function sendResponse(socket, command, code, message) {
+  let statusObj = {
+      command: command,
+      code: code,
+      message: message
+  };
+  socket.emit('response', statusObj);
+};
 
 io.sockets.on('connection', function(socket) {
   console.log('connection info: ', socket.request.connection._peername);
@@ -248,19 +255,10 @@ io.sockets.on('connection', function(socket) {
       console.log('접속한 소켓의 ID: ' + socket.id);
       login_ids[login.id] = socket.id;
       socket.login_id = login.id;
-      socket.login_id = login.id;
 
       console.log('현재 접속한 클라이언트 ID 개수: %d', Object.keys(login_ids).length);
 
       sendResponse(socket, 'login', '200', '로그인되었습니다.');
-  })
+  });
 });
 
-function sendResponse(socket, command, code, message) {
-    let statusObj = {
-        command: command,
-        code: code,
-        message: message
-    };
-    socket.emit('response', statusObj);
-};
