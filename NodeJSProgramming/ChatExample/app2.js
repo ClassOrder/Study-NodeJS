@@ -219,4 +219,14 @@ io.sockets.on('connection', function(socket) {
 
   socket.remoteAddress = socket.request.connection._peername.address;
   socket.remotePort = socket.request.connection._peername.port;
-})
+
+  socket.on('message', function(message) {
+      console.log('message 이벤트를 받았습니다.');
+      console.dir(message);
+
+      if(message.recepient == 'ALL') {
+          console.dir('나를 포함한 모든 클라이언트에게 message 이벤트를 전송합니다.');
+          io.sockets.emit('message', message);
+      }
+  });
+});
