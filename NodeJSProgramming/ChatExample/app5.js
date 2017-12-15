@@ -42,88 +42,88 @@ app.use(cors());
 
 let LocalStrategy = require('passport-local').Strategy;
 
-router.route('/').get(function(req, res){
-  console.log('/ 패스 요청됨.');
-  res.render('index.ejs');
+router.route('/').get(function (req, res) {
+    console.log('/ 패스 요청됨.');
+    res.render('index.ejs');
 });
 
-app.get('/login', function(req, res) {
-  console.log('/login 패스 요청됨.');
-  res.render('login.ejs', {message: req.flash('loginMessage')});
+app.get('/login', function (req, res) {
+    console.log('/login 패스 요청됨.');
+    res.render('login.ejs', { message: req.flash('loginMessage') });
 })
 
 app.post('/login', passport.authenticate('local-login', {
-  successRedirect: '/profile',
-  failureRedirect: '/login',
-  failureFlash: true
+    successRedirect: '/profile',
+    failureRedirect: '/login',
+    failureFlash: true
 }));
 
 passport.use('local-login', new LocalStrategy({
-  usernameField: 'email',
-  passwordField: 'password',
-  passReqToCallback: true
-}, function(req, email, password, done){
-  console.log('passport의 local-login 호출: ' + email + ', ' + password);
+    usernameField: 'email',
+    passwordField: 'password',
+    passReqToCallback: true
+}, function (req, email, password, done) {
+    console.log('passport의 local-login 호출: ' + email + ', ' + password);
 
-  let database = app.get('database');
-  database.UserModel.findOne({'email':email}, function(err, user){
-    if(err) return done(err);
+    let database = app.get('database');
+    database.UserModel.findOne({ 'email': email }, function (err, user) {
+        if (err) return done(err);
 
-    if(!user){
-      console.log('계정이 일치하지 않음.');
-      return done(null, false, req.flash('loginMessage', '등록된 계정이 없습니다.'));
-    }
+        if (!user) {
+            console.log('계정이 일치하지 않음.');
+            return done(null, false, req.flash('loginMessage', '등록된 계정이 없습니다.'));
+        }
 
-    let authenticated = user.authenticate(password, user._doc.salt, user._doc.hashed_password);
-    if(!authenticated) {
-      console.log('비밀번호 일치하지 않음');
-      return done(null, false, req.flash('loginMessage', '비밀번호가 일치하지 않습니다.'));
-    }
+        let authenticated = user.authenticate(password, user._doc.salt, user._doc.hashed_password);
+        if (!authenticated) {
+            console.log('비밀번호 일치하지 않음');
+            return done(null, false, req.flash('loginMessage', '비밀번호가 일치하지 않습니다.'));
+        }
 
-    console.log('계정과 비밀번호가 일치함.');
-    return done(null, user);
-  });
+        console.log('계정과 비밀번호가 일치함.');
+        return done(null, user);
+    });
 }));
 
 passport.use('local-signup', new LocalStrategy({
-  usernameField: 'email',
-  passwordField: 'password',
-  passReqToCallback: true
-}, function(req, email, password, done) {
-  let paramName = req.body.name || req.query.name;
-  console.log('passport의 local-signup 호출: ' + email + ', ' + passport + ', ' + paramName);
+    usernameField: 'email',
+    passwordField: 'password',
+    passReqToCallback: true
+}, function (req, email, password, done) {
+    let paramName = req.body.name || req.query.name;
+    console.log('passport의 local-signup 호출: ' + email + ', ' + passport + ', ' + paramName);
 
-  process.nextTick(function() {
-    let database = app.get('database');
-    database.UserModel.findOne({'email': email}, function(err, user) {
-      if(err) {
-        return done(err);
-      }
+    process.nextTick(function () {
+        let database = app.get('database');
+        database.UserModel.findOne({ 'email': email }, function (err, user) {
+            if (err) {
+                return done(err);
+            }
 
-      if(user) {
-        console.log('기존에 계정이 있음.');
-        return done(null, false, req.flash('signupMessage:', '계정이 이미 있습니다.'));
-      } else {
-        let user = new database.UserModel({
-          'email': email,
-          'password': password,
-          'name': paramName
+            if (user) {
+                console.log('기존에 계정이 있음.');
+                return done(null, false, req.flash('signupMessage:', '계정이 이미 있습니다.'));
+            } else {
+                let user = new database.UserModel({
+                    'email': email,
+                    'password': password,
+                    'name': paramName
+                });
+                user.save(function (err) {
+                    if (err) throw err;
+                    console.log('사용자 데이터 추가');
+                    return done(null, user);
+                });
+            }
         });
-        user.save(function(err) {
-          if(err) throw err;
-          console.log('사용자 데이터 추가');
-          return done(null, user);
-        });
-      }
     });
-  });
 }));
 
-passport.serializeUser(function(user, done) {
-  console.log('serializeUser() 호출');
-  console.dir(user);
+passport.serializeUser(function (user, done) {
+    console.log('serializeUser() 호출');
+    console.dir(user);
 
-  done(null, user);
+    done(null, user);
 });
 
 app.use(passport.initialize());
@@ -156,9 +156,9 @@ app.use(cookieParser());
 
 // 세션 설정
 app.use(expressSession({
-  secret:'my key',
-  resave:true,
-  saveUninitialized:true
+    secret: 'my key',
+    resave: true,
+    saveUninitialized: true
 }));
 
 
@@ -170,45 +170,45 @@ route_loader.init(app, express.Router());
 
 //===== 404 에러 페이지 처리 =====//
 let errorHandler = expressErrorHandler({
-static: {
- '404': './public/404.html'
-}
+    static: {
+        '404': './public/404.html'
+    }
 });
 
-app.use( expressErrorHandler.httpError(404) );
-app.use( errorHandler );
+app.use(expressErrorHandler.httpError(404));
+app.use(errorHandler);
 
 
 //===== 서버 시작 =====//
 
 //확인되지 않은 예외 처리 - 서버 프로세스 종료하지 않고 유지함
 process.on('uncaughtException', function (err) {
-  console.log('uncaughtException 발생함 : ' + err);
-  console.log('서버 프로세스 종료하지 않고 유지함.');
-  
-  console.log(err.stack);
+    console.log('uncaughtException 발생함 : ' + err);
+    console.log('서버 프로세스 종료하지 않고 유지함.');
+
+    console.log(err.stack);
 });
 
 // 프로세스 종료 시에 데이터베이스 연결 해제
 process.on('SIGTERM', function () {
-  console.log("프로세스가 종료됩니다.");
-  app.close();
+    console.log("프로세스가 종료됩니다.");
+    app.close();
 });
 
 app.on('close', function () {
-  console.log("Express 서버 객체가 종료됩니다.");
-  if (database.db) {
-	  database.db.close();
-  }
+    console.log("Express 서버 객체가 종료됩니다.");
+    if (database.db) {
+        database.db.close();
+    }
 });
 
 // 시작된 서버 객체를 리턴받도록 합니다. 
-let server = http.createServer(app).listen(app.get('port'), function(){
-  console.log('서버가 시작되었습니다. 포트 : ' + app.get('port'));
+let server = http.createServer(app).listen(app.get('port'), function () {
+    console.log('서버가 시작되었습니다. 포트 : ' + app.get('port'));
 
-  // 데이터베이스 초기화
-  database.init(app, config);
- 
+    // 데이터베이스 초기화
+    database.init(app, config);
+
 });
 
 let io = socketio.listen(server);
@@ -217,12 +217,12 @@ console.log('socket.io 요청을 받아들일 준비가 되었습니다.');
 let login_ids = {};
 
 function sendResponse(socket, command, code, message) {
-  let statusObj = {
-      command: command,
-      code: code,
-      message: message
-  };
-  socket.emit('response', statusObj);
+    let statusObj = {
+        command: command,
+        code: code,
+        message: message
+    };
+    socket.emit('response', statusObj);
 };
 
 function getRoomList() {
@@ -230,22 +230,22 @@ function getRoomList() {
 
     let roomList = [];
 
-    Object.keys(io.sockets.adapter.rooms).forEach(function(roomId) {
+    Object.keys(io.sockets.adapter.rooms).forEach(function (roomId) {
         console.log('current room id: ' + roomId);
-        
+
         let outRoom = io.sockets.adapter.rooms[roomId];
         let foundDefault = false;
         let index = 0;
-        Object.keys(outRoom.sockets).forEach(function(key){
-            console.log('#'+index+': ' +key+', ' + outRoom.sockets[key]);
+        Object.keys(outRoom.sockets).forEach(function (key) {
+            console.log('#' + index + ': ' + key + ', ' + outRoom.sockets[key]);
 
-            if(roomId == key) {
+            if (roomId == key) {
                 foundDefault = true;
                 console.log('this is default room.');
             }
             index++;
         });
-        if(!foundDefault) {
+        if (!foundDefault) {
             roomList.push(outRoom);
         }
     });
@@ -255,83 +255,91 @@ function getRoomList() {
     return roomList;
 }
 
-io.sockets.on('connection', function(socket) {
-  console.log('connection info: ', socket.request.connection._peername);
+io.sockets.on('connection', function (socket) {
+    console.log('connection info: ', socket.request.connection._peername);
 
-  socket.remoteAddress = socket.request.connection._peername.address;
-  socket.remotePort = socket.request.connection._peername.port;
+    socket.remoteAddress = socket.request.connection._peername.address;
+    socket.remotePort = socket.request.connection._peername.port;
 
-  socket.on('message', function(message) {
-      console.log('message 이벤트를 받았습니다.');
-      console.dir(message);
+    socket.on('message', function (message) {
+        console.log('message 이벤트를 받았습니다.');
+        console.dir(message);
 
-      if(message.recepient == 'ALL') {
-          console.dir('나를 포함한 모든 클라이언트에게 message 이벤트를 전송합니다.');
-          io.sockets.emit('message', message);
-      } else {
-          if(login_ids[message.recepient]) {
-            io.sockets.connected[login_ids[message.recepient]].emit('message', message);
+        if (message.recepient == 'ALL') {
+            console.dir('나를 포함한 모든 클라이언트에게 message 이벤트를 전송합니다.');
+            io.sockets.emit('message', message);
+        } else {
+            if (login_ids[message.recepient]) {
+                io.sockets.connected[login_ids[message.recepient]].emit('message', message);
 
-            sendResponse(socket, 'message', '200', '메시지를 전송합니다.');
-          } else {
-              sendResponse(socket, 'login', '404', '상대방의 로그인 ID를 찾을 수 없습니다.');
-          }
-      }
-  });
-
-  socket.on('login', function(login) {
-      console.log('login 이벤트를 받았습니다.');
-      console.dir(login);
-
-      console.log('접속한 소켓의 ID: ' + socket.id);
-      login_ids[login.id] = socket.id;
-      socket.login_id = login.id;
-
-      console.log('현재 접속한 클라이언트 ID 개수: %d', Object.keys(login_ids).length);
-
-      sendResponse(socket, 'login', '200', '로그인되었습니다.');
-  });
-
-  socket.on('room', function(room) {
-      console.log('room 이벤트를 받았습니다.');
-      console.dir(room);
-
-      switch(room.command) {
-          case 'create':
-            if(io.sockets.adapter.rooms[room.roomId]){
-                console.log('방이 이미 만들어져 있습니다.');
+                sendResponse(socket, 'message', '200', '메시지를 전송합니다.');
             } else {
-                console.log('방을 새로 만듭니다.');
-                socket.join(room.roomId);
+                sendResponse(socket, 'login', '404', '상대방의 로그인 ID를 찾을 수 없습니다.');
+            }
+        }
+    });
 
+    socket.on('login', function (login) {
+        console.log('login 이벤트를 받았습니다.');
+        console.dir(login);
+
+        console.log('접속한 소켓의 ID: ' + socket.id);
+        login_ids[login.id] = socket.id;
+        socket.login_id = login.id;
+
+        console.log('현재 접속한 클라이언트 ID 개수: %d', Object.keys(login_ids).length);
+
+        sendResponse(socket, 'login', '200', '로그인되었습니다.');
+    });
+
+    socket.on('room', function (room) {
+        console.log('room 이벤트를 받았습니다.');
+        console.dir(room);
+
+        switch (room.command) {
+            case 'create':
+                if (io.sockets.adapter.rooms[room.roomId]) {
+                    console.log('방이 이미 만들어져 있습니다.');
+                } else {
+                    console.log('방을 새로 만듭니다.');
+                    socket.join(room.roomId);
+
+                    let curRoom = io.sockets.adapter.rooms[room.roomId];
+                    curRoom.id = room.roomId;
+                    curRoom.name = room.roomName;
+                    curRoom.owner = room.roomOwner;
+                }
+                break;
+            case 'update':
                 let curRoom = io.sockets.adapter.rooms[room.roomId];
                 curRoom.id = room.roomId;
                 curRoom.name = room.roomName;
                 curRoom.owner = room.roomOwner;
-            }
-            break;
-          case 'update':
-            let curRoom = io.sockets.adapter.rooms[room.roomId];
-            curRoom.id = room.roomId;
-            curRoom.name = room.roomName;
-            curRoom.owner = room.roomOwner;
-            break;
-          case 'delete':
-            socket.leave(room.roomId);
-            if(io.sockets.adapter.rooms[room.roomId]) {
-                delete io.sockets.adapter.rooms[room.roomId];
-            } else {
-                console.log('방이 만들어져 있지 않습니다.');
-            }
-            break;
-      }
-      let roomList = getRoomList();
-      let output = {
-          command: 'list',
-          rooms: roomList
-      };
-      console.log('클라이언트로 보낼 데이터: ' + JSON.stringify(output));
+                break;
+            case 'delete':
+                socket.leave(room.roomId);
+                if (io.sockets.adapter.rooms[room.roomId]) {
+                    delete io.sockets.adapter.rooms[room.roomId];
+                } else {
+                    console.log('방이 만들어져 있지 않습니다.');
+                }
+                break;
+            case 'join':
+                socket.join(room.roomId);
+                sendResponse(socket, 'room', '200', '방에 입장했습니다.');
+                break;
+            case 'leave':
+                socket.leave(room.roomId);
+                sendResponse(socket, 'room', '200', '방에서 나갔습니다.');
+                break;
+        }
+        let roomList = getRoomList();
+        let output = {
+            command: 'list',
+            rooms: roomList
+        };
+        console.log('클라이언트로 보낼 데이터: ' + JSON.stringify(output));
 
-      io.sockets.emit('room', output);
-  })
+        io.sockets.emit('room', output);
+    })
 });
