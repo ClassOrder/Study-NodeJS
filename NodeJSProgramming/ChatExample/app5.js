@@ -269,12 +269,18 @@ io.sockets.on('connection', function (socket) {
             console.dir('나를 포함한 모든 클라이언트에게 message 이벤트를 전송합니다.');
             io.sockets.emit('message', message);
         } else {
-            if (login_ids[message.recepient]) {
-                io.sockets.connected[login_ids[message.recepient]].emit('message', message);
+            if(message.command == 'chat') {
+                if (login_ids[message.recepient]) {
+                    io.sockets.connected[login_ids[message.recepient]].emit('message', message);
+    
+                    sendResponse(socket, 'message', '200', '메시지를 전송합니다.');
+                } else {
+                    sendResponse(socket, 'login', '404', '상대방의 로그인 ID를 찾을 수 없습니다.');
+                }
+            } else if(message.command == 'groupchat') {
+                io.sockets.in(message.recepient).emit('message', message);
 
-                sendResponse(socket, 'message', '200', '메시지를 전송합니다.');
-            } else {
-                sendResponse(socket, 'login', '404', '상대방의 로그인 ID를 찾을 수 없습니다.');
+                sendResponse(socket, 'message', '200', '방 [' + message.recepient +']의 모든 사용자들에게 메시지를 전송했습니다.');
             }
         }
     });

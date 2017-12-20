@@ -76,7 +76,7 @@
             $('#deleteRoomButton').bind('click', function(event) {
                 outputDataSetting('delete');
             });
-            $('joinRoomButton').bind('click', function(event) {
+            $('#joinRoomButton').bind('click', function(event) {
                 let roomId = $('#roomIdInput').val();
 
                 let output = {
@@ -91,7 +91,7 @@
                 }
                 socket.emit('room', output);
             });
-            $('leaveRoomButton').bind('click', function(event) {
+            $('#leaveRoomButton').bind('click', function(event) {
                 let roomId = $('#roomIdInput').val();
 
                 let output = {
@@ -107,7 +107,7 @@
                 socket.emit('room', output);
             });
             $('#sendButton').bind('click', function(event) {
-                let chattype = $('#chattype option : selected').val();
+                let chattype = $('#chattype option:selected').val();
 
                 let sender = $('#senderInput').val();
                 let recepient = $('#recepientInput').val();
