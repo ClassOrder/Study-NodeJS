@@ -48,4 +48,3 @@ function initRoutes(app, router) {
 }
 
 module.exports = route_loader;
-
