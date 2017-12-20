@@ -21,6 +21,30 @@
         height: 10em;
         overflow: auto;
     }
+    .discussion {
+        list-style: none;
+        background: #ededed;
+        margin: 0;
+        padding: 0 0 50px 0;
+    }
+    .discussion li {
+        padding: 0.5em;
+        overflow: hidden;
+        display: flex;
+    }
+    .discussion .avatar {
+        width: 40px;
+        position: relative;
+    }
+    .discussion .avatar img {
+        display: block;
+        width: 100%;
+    }
+
+    .self {
+        justify-content: flex-end;
+        align-items: flex-end;
+    }
     </style>
     <script src="semantic.min.js"></script>
     <script>
@@ -58,6 +82,7 @@
                     return;
                 }
                 socket.emit('message', output);
+                addToDiscussion('self', data);
             });
 
             $("#loginButton").bind('click', function(event) {
@@ -97,7 +122,8 @@
                 socket.on('message', function(message) {
                     console.log(JSON.stringify(message));
 
-                    println('<p>수신 메시지: ' + message.sender + ', ' + message.recepient + ', ' + message.command + ', ' + message.type + ', ' + message.data + '</p>');
+                    // println('<p>수신 메시지: ' + message.sender + ', ' + message.recepient + ', ' + message.command + ', ' + message.type + ', ' + message.data + '</p>');
+                    addToDiscussion('other', message.data);
                 });
 
                 socket.on('response', function(response) {
@@ -109,6 +135,27 @@
             socket.on('disconnect', function() {
                 println('웹 소켓 서버가 종료되었습니다.');
             });
+        }
+
+        function addToDiscussion(writer, msg) {
+            println("addToDiscussion 호출: " + writer + ", " + msg);
+
+            var img = '/public/images/user1.png';
+            if(writer == 'other') {
+                img = '/public/images/user2.png';
+            }
+
+            var contents = '<li class="' + writer + '">'
+                            + '  <div class="avatar">'
+                            + '    <img src="' + img + '">'
+                            + '  </div>'
+                            + '  <div class="messages">'
+                            + '    <p>' + msg + '</p>'
+                            + '    <time datetime="2016-02-10 18:30">18시 30분</time>'
+                            + '  </div>'
+                            + '</li>';
+            println('추가할 HTML: ' + contents);
+            $(".discussion").prepend(contents);                
         }
         
         function println(data) {
@@ -184,7 +231,28 @@
 
         <hr>
         <h4 class="ui horizontal divider header">메시지</h4>
-        <div class="ui segment" id="result"></div>
+        <div class="ui segment" id="result">
+            <ol class="discussion">
+                <li class="other">
+                    <div class="avatar">
+                        <img src="/public/images/user2.png">
+                    </div>
+                    <div class="messages">
+                        <p>어디쯤이야? 다들 기다리고 있어.</p>
+                        <time datetime="2016-02-10 18:10">18시 10분</time>
+                    </div>
+                </li>
+                <li class="self">
+                    <div class="avatar">
+                        <img src="/public/images/user1.png">
+                    </div>
+                    <div class="messages">
+                        <p>차가 막히네. 조금 늦을 듯.</p>
+                        <time datetime="2016-02-10 18:00">18시 00분</time>
+                    </div>
+                </li>
+            </ol>
+        </div>
     </div>
 </div>
 </body>
