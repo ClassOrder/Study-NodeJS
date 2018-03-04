@@ -12,6 +12,9 @@ module.exports = app => {
     app.use(morgan("dev"));
     app.use(bodyParser.urlencoded({"extended":true}));
     app.use(bodyParser.json());
+    app.use(bodyParser({
+        uploadDir:path.join(__dirname,"public/upload/temp")
+    }));
     app.use(methodOverride());
     app.use(cookieParser("values-in-here"));
     routes(app);
